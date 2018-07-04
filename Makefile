@@ -5,7 +5,7 @@
 ## makefile
 ##
 
-NAME		= cobra_server
+NAME		= lbl-monitor
 
 CC		= gcc
 
