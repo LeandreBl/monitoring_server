@@ -28,6 +28,7 @@ int cserver_run(cserver *server)
 {
 	int size = 0;
 
+	trace(T_PROMPT, "");
 	while (server->is_running) {
 		if (cserver_resize_events(server) == -1)
 			return (-1);

@@ -16,6 +16,7 @@ enum trace_error_type_e {
 	T_ACK,
 	T_DUMP,
 	T_NONE,
+	T_PROMPT,
 };
 
 int trace(enum trace_error_type_e type, const char *format, ...);

@@ -26,6 +26,7 @@ static const struct trace_s TRACE_TAB[] = {
 	{ "--", BOLDGREEN "Ack", "--", 1 },
 	{ "#", BOLDWHITE "Dump", "", 1 },
 	{ "", "", "", 1 },
+	{ BOLDYELLOW, "->", RESET, 1 },
 };
 
 int trace(enum trace_error_type_e type, const char *format, ...)
