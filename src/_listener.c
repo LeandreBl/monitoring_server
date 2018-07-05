@@ -14,7 +14,7 @@ int _listener(cserver *server, cclient *client)
 	struct sockaddr_in saddr;
 	int fd;
 
-	fd = accept_client(client->fd, 5, &saddr);
+	fd = accept_client(client->fd, &saddr);
 	if (fd == -1) {
 		trace(T_ERROR, "Failed to accept new client: %m\n");
 		return (-1);

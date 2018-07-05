@@ -42,8 +42,8 @@ typedef struct server_s {
 
 int client_mode(const char *ipaddr, uint16_t port);
 
-int create_server(uint16_t port, struct sockaddr_in *ptr);
-int accept_client(int sockfd, int backlog, struct sockaddr_in *buf);
+int create_server(uint16_t port, int backlog, struct sockaddr_in *ptr);
+int accept_client(int sockfd, struct sockaddr_in *buf);
 int connect_to(const char *ip, uint16_t port, struct sockaddr_in *buffer);
 uint32_t get_addr(const char *str);
 

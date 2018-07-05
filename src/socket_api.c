@@ -16,17 +16,24 @@
 #include <netdb.h>
 #include <unistd.h>
 
+#include "server.h"
+
 uint32_t get_addr(const char *str)
 {
-	char dup[18] = { 0 };
-	uint32_t addr;
-	char *p;
+	uint32_t addr = 0;
+	uint8_t *paddr = (uint8_t *)&addr;
+	const char *delim = strchrnul(str, ' ');
+	const char *p = str;
 
-	strcpy(dup, str);
-	p = strchr(dup, ' ');
-	if (p != NULL)
-		*p = 0;
-	inet_pton(AF_INET, dup, &addr);
+	if (p == NULL)
+		return (0);
+	for (int i = 0; p < delim; ++i) {
+		paddr[i] = (uint8_t)atoi(p);
+		p = strchr(p, '.');
+		if (p == NULL)
+			return (addr);
+		++p;
+	}
 	return (addr);
 }
 
@@ -43,7 +50,7 @@ static int bind_and_get(int fd, struct sockaddr *server)
 	return (0);
 }
 
-int create_server(uint16_t port, struct sockaddr_in *ptr)
+int create_server(uint16_t port, int backlog, struct sockaddr_in *ptr)
 {
 	struct sockaddr_in server;
 
@@ -58,6 +65,8 @@ int create_server(uint16_t port, struct sockaddr_in *ptr)
 	server.sin_port = htons(port);
 	if (bind_and_get(fd, (struct sockaddr *)&server) == -1)
 		return (-1);
+	if (listen(fd, backlog) == -1)
+		return (-1);
 	if (ptr) {
 		*ptr = server;
 		ptr->sin_port = htons(server.sin_port);
@@ -65,14 +74,12 @@ int create_server(uint16_t port, struct sockaddr_in *ptr)
 	return (fd);
 }
 
-int accept_client(int sockfd, int backlog, struct sockaddr_in *buf)
+int accept_client(int sockfd, struct sockaddr_in *buf)
 {
 	socklen_t clilen;
 	struct sockaddr_in client;
 	int fd;
 
-	if (listen(sockfd, backlog) == -1)
-		return (-1);
 	clilen = sizeof(client);
 	fd = accept(sockfd, (struct sockaddr *)&client, &clilen);
 	if (fd == -1)

@@ -22,7 +22,7 @@ static int listener_stdin(cserver *server)
 	if (scalloc(&listener, 1, sizeof(*listener)) == -1 ||
 		scalloc(&stdin, 1, sizeof(*stdin)) == -1)
 		return (-1);
-	fd = create_server(server->port, &saddr);
+	fd = create_server(server->port, 50, &saddr);
 	if (fd == -1) {
 		trace(T_PANIC, "Fail to start server on port %u\n", server->port);
 		return (-1);
