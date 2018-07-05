@@ -20,6 +20,7 @@ static int try_reconnect(const char *ipaddr, uint16_t port,
 		self->fd = connect_to(ipaddr, port, self->saddr);
 		if (self->fd != -1)
 			return (0);
+		sleep(1);
 	}
 	return (-1);
 }
