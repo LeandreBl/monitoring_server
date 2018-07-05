@@ -22,7 +22,9 @@ int _stdin_exec(cserver *server, const char *line)
 {
 	const char *cmd = strchr(line, ' ');
 	uint32_t addr;
-	uint8_t *p = (uint8_t *)&addr;
+	uint8_t *p;
+	cclient *ptr;
+
 	if (cmd == NULL) {
 		trace(T_ERROR, "usage: /exec @[ip] [command]\n\t\t"
 			"if @a is used, the command is send to all clients\n");
@@ -36,12 +38,18 @@ int _stdin_exec(cserver *server, const char *line)
 		return (0);
 	}
 	addr = get_addr(line);
-	for (size_t i = 0; i < server->clients->len; ++i)
-		if (((cclient *)(server->clients->i[i]))->saddr->sin_addr.s_addr == addr) {
+	p = (uint8_t *)&addr;
+	trace(T_DEBUG, "\"%s\" line %u.%u.%u.%u\n",
+	line, p[0], p[1], p[2], p[3]);
+	for (size_t i = 0; i < server->clients->len; ++i) {
+		ptr = server->clients->i[i];
+		p = (uint8_t *)&ptr->saddr->sin_addr;
+		if (ptr->saddr->sin_addr.s_addr == addr) {
 			trace(T_INFO, "Sending \"%s\" to %u.%u.%u.%u\n", 
 			cmd, p[0], p[1], p[2], p[3]);
 			return (_exec(server->clients->i[i], cmd));
 		}
+	}
 	trace(T_ERROR, "/exec, incorrect ip\n");
 	return (-1);
 }

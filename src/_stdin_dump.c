@@ -26,6 +26,7 @@ static int _dump(cclient *client)
 int _stdin_dump(cserver *server, const char *line)
 {
 	uint32_t addr;
+	cclient *ptr;
 
 	if (line[0] == 'a') {
 		for (size_t i = 0; i < server->clients->len; ++i)
@@ -33,9 +34,11 @@ int _stdin_dump(cserver *server, const char *line)
 		return (0);
 	}
 	addr = get_addr(line);
-	for (size_t i = 0; i < server->clients->len; ++i)
-		if (((cclient *)(server->clients->i[i]))->saddr->sin_addr.s_addr == addr)
-			return (_dump(server->clients->i[i]));
+	for (size_t i = 0; i < server->clients->len; ++i) {
+		ptr = server->clients->i[i];
+		if (ptr->saddr->sin_addr.s_addr == addr)
+			return (_dump(ptr));
+	}
 	trace(T_ERROR, "/dump incorrect ip: %s\n", line);
 	return (0);
 }

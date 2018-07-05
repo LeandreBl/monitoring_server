@@ -18,13 +18,14 @@
 
 uint32_t get_addr(const char *str)
 {
+	char *dup = strdup(str);
 	uint32_t addr;
-	uint8_t *p = (uint8_t *)&addr;
+	char *p;
 
-	for (int i = 0; i < 4 && str != NULL; ++i) {
-		p[i] = (uint8_t)atoi(str);
-		str = strchr(str, '.');
-	}
+	p = strchr(dup, ' ');
+	*p = 0;
+	inet_pton(AF_INET, dup, &addr);
+	free(dup);
 	return (addr);
 }
 
