@@ -38,9 +38,6 @@ int _stdin_exec(cserver *server, const char *line)
 		return (0);
 	}
 	addr = get_addr(line);
-	p = (uint8_t *)&addr;
-	trace(T_DEBUG, "\"%s\" line %u.%u.%u.%u\n",
-	line, p[0], p[1], p[2], p[3]);
 	for (size_t i = 0; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
 		p = (uint8_t *)&ptr->saddr->sin_addr;

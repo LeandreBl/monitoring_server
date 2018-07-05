@@ -18,14 +18,15 @@
 
 uint32_t get_addr(const char *str)
 {
-	char *dup = strdup(str);
+	char dup[18] = { 0 };
 	uint32_t addr;
 	char *p;
 
+	strcpy(dup, str);
 	p = strchr(dup, ' ');
-	*p = 0;
+	if (p != NULL)
+		*p = 0;
 	inet_pton(AF_INET, dup, &addr);
-	free(dup);
 	return (addr);
 }
 
