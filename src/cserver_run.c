@@ -11,7 +11,7 @@
 
 #include "server.h"
 
-static int cserver_tresize_events(cserver_t *server)
+static int cserver_resize_events(cserver_t *server)
 {
 	if (server->esize != server->clients->len) {
 		server->events = realloc(server->events,
@@ -30,7 +30,7 @@ int cserver_run(cserver_t *server)
 	int size = 0;
 
 	while (server->is_running) {
-		if (cserver_tresize_events(server) == -1)
+		if (cserver_resize_events(server) == -1)
 			return (-1);
 		if (server->events != NULL) {
 			size = epoll_wait(server->epoll, server->events, server->clients->len,

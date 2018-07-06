@@ -71,11 +71,10 @@ ssize_t cbuffer_getbytes(cbuffer_t *buffer, char **pline, char delim)
 		*pline = NULL;
 		return (0);
 	}
-	for (rd = 1; *p != delim && p != buffer->writer; ++rd) {
+	for (rd = 1; p != buffer->writer && *p != delim; ++rd) {
 		if (p == buffer->end)
 			p = buffer->buffer;
-		else
-			++p;
+		++p;
 	}
 	*pline = calloc(rd + 1, sizeof(char));
 	if (*pline == NULL)

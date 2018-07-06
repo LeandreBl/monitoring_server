@@ -36,7 +36,6 @@ typedef struct server_s {
 	int epoll;
 	size_t esize;
 	struct epoll_event *events;
-	cclient_t *listener;
 	gtab_t *clients;
 	uint16_t port;
 	bool is_running;
@@ -75,6 +74,7 @@ int _help(cserver_t *server, const char *line);
 int _ack(cserver_t *server, const char *line);
 int _stdin_exec(cserver_t *server, const char *line);
 int _stdin_dump(cserver_t *server, const char *line);
+int _eject(cserver_t *server, const char *line);
 
 int scalloc(void *pptr, size_t nmemb, size_t size);
 

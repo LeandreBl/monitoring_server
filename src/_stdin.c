@@ -23,7 +23,8 @@ static const struct parsing_s commands[] = {
 	{"ls", _pretty_ls, NULL},
 	{"/stop", _stop, "/stop\t\t\t(stops the server)"},
 	{"/help", _help, "/help\t\t\t(shows this help)"},
-	{"/ack", _ack, "/ack\t\t\t(shows informations about all clients)"}
+	{"/ack @", _ack, "/ack @[ip]\t\t\t(informations about clients)"},
+	{"/eject @", _eject, "/eject @[ip]\t\t\t(eject a client)"}
 };
 
 int _help(__attribute__ ((unused)) cserver_t *server,

@@ -32,13 +32,13 @@ int _stdin_exec(cserver_t *server, const char *line)
 	}
 	++cmd;
 	if (line[0] == 'a') {
-		trace(T_INFO, "Sending \"%s\" to %u clients\n", cmd, server->clients->len);
+		trace(T_INFO, "Sending \"%s\" to %u clients\n", cmd, server->clients->len - 1);
 		for (size_t i = 0; i < server->clients->len; ++i)
 			_exec(server->clients->i[i], cmd);
 		return (0);
 	}
 	addr = get_addr(line);
-	for (size_t i = 0; i < server->clients->len; ++i) {
+	for (size_t i = 1; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
 		p = (uint8_t *)&ptr->saddr->sin_addr;
 		if (ptr->saddr->sin_addr.s_addr == addr) {

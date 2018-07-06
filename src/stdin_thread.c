@@ -6,6 +6,7 @@
 */
 
 #include <readline/readline.h>
+#include <readline/history.h>
 #include <stdlib.h>
 
 #include "server.h"
@@ -22,8 +23,10 @@ void *stdin_thread(void *p)
 			server->is_running = false;
 		else {
 			_stdin(server, line);
+			add_history(line);
 			free(line);
 		}
 	}
+	clear_history();
 	return (NULL);
 }

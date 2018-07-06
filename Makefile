@@ -34,6 +34,7 @@ SRCS		+= src/_pretty_ls.c
 SRCS		+= src/client_mode.c
 SRCS		+= src/_ack.c
 SRCS		+= src/stdin_thread.c
+SRCS		+= src/eject.c
 
 OBJS		= $(SRCS:.c=.o)
 

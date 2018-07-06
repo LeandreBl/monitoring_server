@@ -39,7 +39,7 @@ int trace(enum trace_error_type_e type, const char *format, ...)
 		return (0);
 #endif
 	va_start(ap, format);
-	ret_value = dprintf(TRACE_TAB[type].fd, "%s%s%s%s ", TRACE_TAB[type].fr, TRACE_TAB[type].front, RESET, TRACE_TAB[type].end);
+	ret_value = dprintf(TRACE_TAB[type].fd, "\r%s%s%s%s ", TRACE_TAB[type].fr, TRACE_TAB[type].front, RESET, TRACE_TAB[type].end);
 	ret_value += vdprintf(TRACE_TAB[type].fd, format, ap);
 	va_end(ap);
 	return (ret_value);

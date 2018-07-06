@@ -32,8 +32,10 @@ int rdonly(cserver_t *server, cclient_t *client)
 		lsize = (ssize_t)sizeof(buffer);
 		rd = read(client->fd, buffer, sizeof(buffer));
 		if (rd <= 0) {
-			if (server != NULL)
+			if (server != NULL) {
 				rdonly_del(server, client);
+				return ((lsize == 0) ? 0 : -1);
+			}
 			return (rd);
 		}
 		cbuffer_write(client->cbuffer, buffer, rd);

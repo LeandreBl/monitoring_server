@@ -16,8 +16,9 @@ static int listener_stdin(cserver_t *server)
 {
 	int fd;
 	struct sockaddr_in saddr;
+	cclient_t *listener;
 
-	if (scalloc(&server->listener, 1, sizeof(*server->listener)) == -1 ||
+	if (scalloc(&listener, 1, sizeof(*listener)) == -1 ||
 		scalloc(&server->stdin, 1, sizeof(*server->stdin)) == -1)
 		return (-1);
 	fd = create_server(server->port, 50, &saddr);
@@ -25,9 +26,8 @@ static int listener_stdin(cserver_t *server)
 		trace(T_PANIC, "Fail to start server on port %u\n", server->port);
 		return (-1);
 	}
-	listen(fd, 0);
-	if (cclient_create(server->listener, fd, &saddr, S_LISTENER) == -1 ||
-		cserver_add_in_poll(server, server->listener) == -1)
+	if (cclient_create(listener, fd, &saddr, S_LISTENER) == -1 ||
+		cserver_add_in_poll(server, listener) == -1)
 	server->port = saddr.sin_port;
 	return (0);
 }
@@ -38,7 +38,7 @@ int cserver_create(cserver_t *server, uint16_t port)
 	if (scalloc(&server->clients, 1, sizeof(*server->clients)) == -1)
 		return (-1);
 	if (gtab_create(server->clients, 5) == -1) {
-		trace(T_PANIC, "lblgtab_create failed\n");
+		trace(T_PANIC, "gtab_create failed\n");
 		return (-1);
 	}
 	server->epoll = epoll_create1(0);
@@ -60,11 +60,9 @@ int cserver_create(cserver_t *server, uint16_t port)
 void cserver_destroy(cserver_t *server)
 {
 	gtab_destroy(server->clients, (void (*)(void *))cclient_fdestroy);
-	cclient_destroy(server->listener);
 	pthread_join(*server->stdin, NULL);
-	free(server->listener);
 	free(server->stdin);
 	free(server->clients);	
 	free(server->events);
-	trace(T_ACK, "\nStopping server[...]\n");
+	trace(T_ACK, "Stopping server[...]\n");
 }

