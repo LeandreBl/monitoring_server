@@ -24,18 +24,17 @@ static int server_mode(uint16_t port)
 
 static void usage(const char *av0)
 {
-	printf("USAGE: %s [MODE] [PORT]\n"
-	"\t%s --server [port]\n"
-	"\t%s --client [ip] [port]\n", av0, av0, av0);
+	printf("USAGE:\n"
+		"\t%s --server [port]\n"
+		"\t%s --client [ip] [port]\n", av0, av0);
 }
 
 int main(int ac, char **av)
 {
 	if (ac == 3 && strcmp(av[1], "--server") == 0)
-			return (server_mode(atoi(av[2])));
+		return (server_mode(atoi(av[2])));
 	else if (ac == 4 && strcmp(av[1], "--client") == 0)
-			return (client_mode(av[2], atoi(av[3])));
-	else
-			usage(av[0]);
+		return (client_mode(av[2], atoi(av[3])));
+	usage(av[0]);
 	return (0);
 }

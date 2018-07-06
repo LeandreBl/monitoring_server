@@ -18,6 +18,13 @@ static int _exec(cclient_t *client, const char *cmd)
 	return (0);
 }
 
+static void _exec_all(cserver_t *server, const char *cmd)
+{
+	trace(T_INFO, "Sending \"%s\" to %u clients\n", cmd, server->clients->len - 1);
+		for (size_t i = 0; i < server->clients->len; ++i)
+			_exec(server->clients->i[i], cmd);
+}
+
 int _stdin_exec(cserver_t *server, const char *line)
 {
 	const char *cmd = strchr(line, ' ');
@@ -31,10 +38,12 @@ int _stdin_exec(cserver_t *server, const char *line)
 		return (-1);
 	}
 	++cmd;
+	if (server->clients->len <= 1) {
+		trace(T_ERROR, "No client connected\n");
+		return (1);
+	}
 	if (line[0] == 'a') {
-		trace(T_INFO, "Sending \"%s\" to %u clients\n", cmd, server->clients->len - 1);
-		for (size_t i = 0; i < server->clients->len; ++i)
-			_exec(server->clients->i[i], cmd);
+		_exec_all(server, cmd);
 		return (0);
 	}
 	addr = get_addr(line);

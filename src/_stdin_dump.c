@@ -33,13 +33,21 @@ int _stdin_dump(cserver_t *server, const char *line)
 {
 	uint32_t addr;
 	cclient_t *ptr;
+	bool done = false;
 
+	if (server->clients->len <= 1) {
+		trace(T_ERROR, "No client connected\n");
+		return (1);
+	}
 	addr = get_addr(line);
 	for (size_t i = 1; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
-		if (ptr->saddr->sin_addr.s_addr == addr || *line == 'a')
-			return (_dump(ptr));
+		if (ptr->saddr->sin_addr.s_addr == addr || *line == 'a') {
+			_dump(ptr);
+			done = true;
+		}
 	}
-	trace(T_ERROR, "/dump incorrect ip: %s\n", line);
+	if (done == false)
+		trace(T_ERROR, "/dump incorrect ip: %s\n", line);
 	return (0);
 }

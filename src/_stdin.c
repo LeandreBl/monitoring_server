@@ -18,19 +18,20 @@ struct parsing_s {
 };
 
 static const struct parsing_s commands[] = {
-	{"/exec @" , _stdin_exec, "/exec @[ip] [command]\t(execute a remote command)"},
-	{"/dump @" , _stdin_dump, "/dump @[ip]\t\t(dump the oldest client answer)"},
+	{"/exec @" , _stdin_exec, "/exec  @[ip] [command]\t(execute a remote command)"},
+	{"/dump @" , _stdin_dump, "/dump  @[ip]\t\t(dump the oldest client answer)"},
 	{"ls", _pretty_ls, NULL},
 	{"/stop", _stop, "/stop\t\t\t(stops the server)"},
 	{"/help", _help, "/help\t\t\t(shows this help)"},
-	{"/ack @", _ack, "/ack @[ip]\t\t\t(informations about clients)"},
-	{"/eject @", _eject, "/eject @[ip]\t\t\t(eject a client)"}
+	{"/ack @", _ack, "/ack   @[ip]\t\t(informations about clients)"},
+	{"/eject @", _eject, "/eject @[ip]\t\t(eject a client)"},
 };
 
 int _help(__attribute__ ((unused)) cserver_t *server,
 	__attribute__ ((unused)) const char *line)
 {
-	trace(T_INFO, "Help:\n");
+	trace(T_INFO, "Help (for all the commands, you can type @a instead of "
+		"@[ip] to target all clients:\n");
 	for (size_t i = 0; i < sizeof(commands) / sizeof(*commands); ++i)
 		if (commands[i].help != NULL)
 			trace(T_NONE, "\t%s\n", commands[i].help);

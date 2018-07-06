@@ -15,7 +15,7 @@ int _eject(cserver_t *server, const char *line)
 	cclient_t *ptr;
 	uint8_t *p = (uint8_t *)&addr;
 
-	if (server->clients->len == 0) {
+	if (server->clients->len <= 1) {
 		trace(T_ERROR, "No client connected\n");
 		return (0);
 	}
@@ -23,7 +23,7 @@ int _eject(cserver_t *server, const char *line)
 	for (size_t i = 1; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
 		if (*line == 'a' || addr == ptr->saddr->sin_addr.s_addr) {
-			dprintf(ptr->fd, "\a\aSTOP\a\a");
+			dprintf(ptr->fd, "EJECT\n");
 			cserver_del_in_poll(server, ptr);
 			trace(T_INFO, "Ejecting %u.%u.%u.%u\n", p[0], p[1], p[2], p[3]);
 		}

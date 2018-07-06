@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include "server.h"
 
@@ -60,7 +61,8 @@ static int run_command(cclient_t *self)
 
 	if (cbuffer_getbytes(self->cbuffer, &cmd, '\n') == -1 || cmd == NULL)
 		return (-1);
-	if (strcmp(cmd, "\a\aSTOP\a\a") == 0) {
+	trace(T_DEBUG, "server: \"%s\"\n", cmd);
+	if (strcmp(cmd, "EJECT\n") == 0) {
 		trace(T_INFO, "Ejected by server\n");
 		exit(0);
 	}

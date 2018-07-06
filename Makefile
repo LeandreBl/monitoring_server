@@ -61,8 +61,6 @@ $(NAME): $(OBJS)
 	@echo "$(CC) $(LIBS) $(OBJS) -o $@ \
 	["$(GREEN)"LINKING OK"$(NO_COLOR)"]"
 
-tests_run:
-
 clean:
 	$(RM) $(OBJS)
 
@@ -71,7 +69,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re tests_run install
-
-install: all
-	@cp $(NAME) /usr/bin 2> /dev/null || printf "Run install as super user:\nsudo make install\n"
+.PHONY: all clean fclean re

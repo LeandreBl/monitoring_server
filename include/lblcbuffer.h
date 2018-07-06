@@ -25,8 +25,8 @@ typedef struct cbuffer_s cbuffer_t;
 
 int cbuffer_create(cbuffer_t *buffer, size_t size);
 void cbuffer_destroy(cbuffer_t *self);
-size_t cbuffer_write(cbuffer_t *self, const char *src, size_t count);
-size_t cbuffer_read(cbuffer_t *self, char *src, size_t count);
+size_t cbuffer_write(cbuffer_t *self, const void *src, size_t count);
+size_t cbuffer_read(cbuffer_t *self, void *dest, size_t count);
 size_t cbuffer_lsize(cbuffer_t *self);
 ssize_t cbuffer_getbytes(cbuffer_t *self, char **pptr, char delim);
 

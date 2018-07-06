@@ -20,6 +20,10 @@ int _ack(cserver_t *server, __attribute__ ((unused)) const char *line)
 {
 	cclient_t *p;
 
+	if (server->clients->len <= 1) {
+		trace(T_ERROR, "No client connected\n");
+		return (1);
+	}
 	trace(T_INFO, "%zu client connected:\n", server->clients->len - 1);
 	for (size_t i = 0; i < server->clients->len; ++i) {
 		p = server->clients->i[i];
