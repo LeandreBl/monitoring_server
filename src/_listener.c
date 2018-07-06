@@ -7,9 +7,9 @@
 
 #include "server.h"
 
-int _listener(cserver *server, cclient *client)
+int _listener(cserver_t *server, cclient_t *client)
 {
-	cclient *new;
+	cclient_t *new;
 	uint8_t *p;
 	struct sockaddr_in saddr;
 	int fd;

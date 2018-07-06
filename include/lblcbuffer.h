@@ -19,15 +19,15 @@ struct cbuffer_s {
 	char *buffer;
 	size_t size;
 	bool empty;
-	void (* destroy)(struct cbuffer_s *self);
-	size_t (* write)(struct cbuffer_s *self, const char *src, size_t count);
-	size_t (* read)(struct cbuffer_s *self, char *src, size_t count);
-	size_t (* lsize)(struct cbuffer_s *self);
-	ssize_t (* getbytes)(struct cbuffer_s *self, char **pptr, char delim);
 };
 
-typedef struct cbuffer_s lblcbuffer;
+typedef struct cbuffer_s cbuffer_t;
 
-int lblcbuffer_create(lblcbuffer *buffer, size_t size);
+int cbuffer_create(cbuffer_t *buffer, size_t size);
+void cbuffer_destroy(cbuffer_t *self);
+size_t cbuffer_write(cbuffer_t *self, const char *src, size_t count);
+size_t cbuffer_read(cbuffer_t *self, char *src, size_t count);
+size_t cbuffer_lsize(cbuffer_t *self);
+ssize_t cbuffer_getbytes(cbuffer_t *self, char **pptr, char delim);
 
 #endif /* !LBL_CIRCULAR_BUFFER_API_ */

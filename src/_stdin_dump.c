@@ -5,28 +5,31 @@
 ** _stdin_dump
 */
 
+#include <stdlib.h>
+
 #include "server.h"
 
-static int _dump(cclient *client)
+static int _dump(cclient_t *client)
 {
 	char *dump;
 	uint8_t *p = (uint8_t *)&client->saddr->sin_addr;
 
 	if (client->use != S_CLIENT)
 		return (0);
-	if (client->cbuffer->getbytes(client->cbuffer, &dump, '\0') == -1)
+	if (cbuffer_getbytes(client->cbuffer, &dump, '\0') == -1)
 		return (-1);
 	if (dump == NULL)
 		dump = "(null)\n";
 	trace(T_DUMP, "\t%u.%u.%u.%u:\n%s----------------------------\n",
 		p[0], p[1], p[2], p[3], dump);
+	free(dump);
 	return (0);
 }
 
-int _stdin_dump(cserver *server, const char *line)
+int _stdin_dump(cserver_t *server, const char *line)
 {
 	uint32_t addr;
-	cclient *ptr;
+	cclient_t *ptr;
 
 	if (line[0] == 'a') {
 		for (size_t i = 0; i < server->clients->len; ++i)

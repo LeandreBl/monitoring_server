@@ -10,13 +10,13 @@
 
 #include "server.h"
 
-int cclient_create(cclient *client, int fd,
+int cclient_create(cclient_t *client, int fd,
 	struct sockaddr_in *saddr, enum socket_use_e use)
 {
 	if (scalloc(&client->cbuffer, 1, sizeof(*client->cbuffer)) == -1
 		|| scalloc(&client->saddr, 1, sizeof(*client->saddr)) == -1)
 		return (-1);
-	if (lblcbuffer_create(client->cbuffer, 1 << 16) == -1) {
+	if (cbuffer_create(client->cbuffer, 1 << 16) == -1) {
 		trace(T_ERROR, "%s: cbuffer_create[%d] failed\n",
 			__FUNCTION__, fd);
 		return (-1);
@@ -29,10 +29,17 @@ int cclient_create(cclient *client, int fd,
 	return (0);
 }
 
-void cclient_destroy(cclient *client)
+void cclient_destroy(cclient_t *client)
 {
-	client->cbuffer->destroy(client->cbuffer);
+	cbuffer_destroy(client->cbuffer);
 	if (client->connected)
 		close(client->fd);
 	free(client->saddr);
+	free(client->cbuffer);
+}
+
+void cclient_fdestroy(cclient_t *client)
+{
+	cclient_destroy(client);
+	free(client);
 }

@@ -10,20 +10,20 @@
 
 #include "lblgtab.h"
 
-static void _destroy(lblgtab *gtab, void (* ifct)(void *))
+void gtab_destroy(gtab_t *gtab, void (* ifct)(void *))
 {
 	if (ifct != NULL)
 		while (gtab->len > 0)
-			gtab->remove_at(gtab, gtab->len - 1, ifct);
+			gtab_remove_at(gtab, gtab->len - 1, ifct);
 	free(gtab->i);
 }
 
-static int _resize(lblgtab *gtab, size_t newsize, void (* ifct)(void *))
+int gtab_resize(gtab_t *gtab, size_t newsize, void (* ifct)(void *))
 {
 	if (newsize == gtab->max_size)
 		return (0);
 	for (size_t i = newsize; i < gtab->len; ++i)
-		gtab->remove_at(gtab, i - 1, ifct);
+		gtab_remove_at(gtab, i - 1, ifct);
 	gtab->max_size = newsize;
 	if (newsize < gtab->len)
 		gtab->len = newsize;
@@ -33,20 +33,20 @@ static int _resize(lblgtab *gtab, size_t newsize, void (* ifct)(void *))
 	return (0);
 }
 
-static int _append(lblgtab *gtab, void *add)
+int gtab_append(gtab_t *gtab, void *add)
 {
 	if (gtab->len == gtab->max_size &&
-		gtab->resize(gtab, gtab->len + GTAB_REALLOC_SIZE, NULL) == -1)
+		gtab_resize(gtab, gtab->len + GTAB_REALLOC_SIZE, NULL) == -1)
 		return (-1);
 	gtab->i[gtab->len] = add;
 	++gtab->len;
 	return (0);
 }
 
-static int _append_at(lblgtab *gtab, void *add, size_t index)
+int gtab_append_at(gtab_t *gtab, void *add, size_t index)
 {
 	if (index > gtab->len || (gtab->len == gtab->max_size &&
-		gtab->resize(gtab, gtab->len + GTAB_REALLOC_SIZE, NULL) == -1))
+		gtab_resize(gtab, gtab->len + GTAB_REALLOC_SIZE, NULL) == -1))
 		return (-1);
 	for (size_t i = gtab->len; i > index; --i)
 		gtab->i[i] = gtab->i[i - 1];
@@ -55,14 +55,14 @@ static int _append_at(lblgtab *gtab, void *add, size_t index)
 	return (0);
 }
 
-void _remove(lblgtab *gtab, void *ptr, void (* ifct)(void *))
+void gtab_remove(gtab_t *gtab, void *ptr, void (* ifct)(void *))
 {
 	for (size_t i = 0; i < gtab->len; ++i)
 		if (gtab->i[i] == ptr)
-			gtab->remove_at(gtab, i, ifct);
+			gtab_remove_at(gtab, i, ifct);
 }
 
-void _remove_at(lblgtab *gtab, size_t index, void (* ifct)(void *))
+void gtab_remove_at(gtab_t *gtab, size_t index, void (* ifct)(void *))
 {
 	if (index > gtab->len)
 		return;
@@ -73,7 +73,7 @@ void _remove_at(lblgtab *gtab, size_t index, void (* ifct)(void *))
 	--gtab->len;
 }
 
-int _shrink_to_fit(lblgtab *gtab)
+int gtab_shrink_to_fit(gtab_t *gtab)
 {
 	if (gtab->len != gtab->max_size) {
 		gtab->max_size = gtab->len;
@@ -84,7 +84,7 @@ int _shrink_to_fit(lblgtab *gtab)
 	return (0);
 }
 
-void _swap(lblgtab *gtab, size_t p1, size_t p2)
+void gtab_swap(gtab_t *gtab, size_t p1, size_t p2)
 {
 	void *tmp;
 
@@ -95,20 +95,12 @@ void _swap(lblgtab *gtab, size_t p1, size_t p2)
 	gtab->i[p2] = tmp;
 }
 
-int lblgtab_create(lblgtab *gtab, size_t nsize)
+int gtab_create(gtab_t *gtab, size_t nsize)
 {
 	gtab->i = malloc(nsize * sizeof(void *));
 	if (gtab->i == NULL)
 		return (-1);
 	gtab->max_size = nsize;
 	gtab->len = 0;
-	gtab->destroy = _destroy;
-	gtab->resize = _resize;
-	gtab->append = _append;
-	gtab->append_at = _append_at;
-	gtab->remove = _remove;
-	gtab->remove_at = _remove_at;
-	gtab->shrink_to_fit = _shrink_to_fit;
-	gtab->swap = _swap;
 	return (0);
 }

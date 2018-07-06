@@ -7,7 +7,7 @@
 
 #include "server.h"
 
-int _stop(cserver *server, __attribute__ ((unused)) const char *line)
+int _stop(cserver_t *server, __attribute__ ((unused)) const char *line)
 {
 	trace(T_INFO, "Stopping server ...\n");
 	server->is_running = false;

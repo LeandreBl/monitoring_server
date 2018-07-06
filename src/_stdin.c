@@ -13,7 +13,7 @@
 
 struct parsing_s {
 	const char *pattern;
-	int (* link)(cserver *server, const char *line);
+	int (* link)(cserver_t *server, const char *line);
 	const char *help;
 };
 
@@ -26,7 +26,7 @@ static const struct parsing_s commands[] = {
 	{"/ack", _ack, "/ack\t\t\t(shows informations about all clients)"}
 };
 
-int _help(__attribute__ ((unused)) cserver *server,
+int _help(__attribute__ ((unused)) cserver_t *server,
 	__attribute__ ((unused)) const char *line)
 {
 	trace(T_INFO, "Help:\n");
@@ -36,27 +36,18 @@ int _help(__attribute__ ((unused)) cserver *server,
 	return (0);
 }
 
-int _stdin(cserver *server, cclient *client)
+int _stdin(cserver_t *server, const char *line)
 {
-	char *line;
-	size_t len;
+	size_t len = strlen(line);
 	int ret;
 
-	if (rdonly(server, client) == -1)
-		return (-1);
-	if (client->cbuffer->getbytes(client->cbuffer, &line, '\n') <= 1)
-		return (-1);
-	if (line[strlen(line) - 1] == '\n')
-		line[strlen(line) - 1] = 0;
 	for (size_t i = 0; i < sizeof(commands) / sizeof(*commands); ++i) {
 		len = strlen(commands[i].pattern);
 		if (strncasecmp(commands[i].pattern, line, len) == 0) {
 			ret = commands[i].link(server, line + len);
-			free(line);
 			return (ret);
 		}
 	}
 	system(line);
-	free(line);
 	return (0);
 }

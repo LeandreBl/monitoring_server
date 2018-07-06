@@ -13,11 +13,12 @@
 
 static int server_mode(uint16_t port)
 {
-	cserver server;
+	cserver_t server;
 
 	if (cserver_create(&server, port) == -1)
 		return (-1);
 	cserver_run(&server);
+	cserver_destroy(&server);
 	return (0);
 }
 

@@ -9,7 +9,7 @@
 
 #include "server.h"
 
-static void rdonly_del(cserver *server, cclient *client)
+static void rdonly_del(cserver_t *server, cclient_t *client)
 {
 	if (client->fd == 0)
 		server->is_running = false;
@@ -18,14 +18,14 @@ static void rdonly_del(cserver *server, cclient *client)
 	cserver_del_in_poll(server, client);
 }
 
-int rdonly(cserver *server, cclient *client)
+int rdonly(cserver_t *server, cclient_t *client)
 {
 	char buffer[512] = { 0 };
 	ssize_t rd;
 	ssize_t lsize;
 
 	do {
-		lsize = client->cbuffer->lsize(client->cbuffer);
+		lsize = cbuffer_lsize(client->cbuffer);
 		if (lsize == 0)
 			return (0);
 		if (lsize > (ssize_t)sizeof(buffer))
@@ -36,7 +36,7 @@ int rdonly(cserver *server, cclient *client)
 				rdonly_del(server, client);
 			return (rd);
 		}
-		client->cbuffer->write(client->cbuffer, buffer, rd);
+		cbuffer_write(client->cbuffer, buffer, rd);
 	} while (rd == lsize);
 	return (0);
 }

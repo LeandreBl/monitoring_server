@@ -10,7 +10,7 @@
 #include "colors.h"
 #include "server.h"
 
-int _client(cserver *server, cclient *client)
+int _client(cserver_t *server, cclient_t *client)
 {
 	char *line;
 	uint8_t *p = (uint8_t *)&client->saddr->sin_addr;
@@ -19,7 +19,7 @@ int _client(cserver *server, cclient *client)
 
 	if (rdonly(server, client) == -1)
 		return (-1);
-	if (client->cbuffer->getbytes(client->cbuffer, &line, ':') == -1)
+	if (cbuffer_getbytes(client->cbuffer, &line, ':') == -1)
 		return (-1);
 	if (line == NULL)
 		return (-1);

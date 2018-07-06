@@ -11,7 +11,7 @@
 
 #include "server.h"
 
-int _pretty_ls(__attribute__ ((unused)) cserver *server, const char *line)
+int _pretty_ls(__attribute__ ((unused)) cserver_t *server, const char *line)
 {
 	char *cmd;
 

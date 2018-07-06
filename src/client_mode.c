@@ -13,7 +13,7 @@
 #include "server.h"
 
 static int try_reconnect(const char *ipaddr, uint16_t port, 
-	cclient *self, size_t timeout)
+	cclient_t *self, size_t timeout)
 {
 	for (size_t i = 0; i < timeout; ++i) {
 		trace(T_ACK, "Try: %zu, Reconnecting ...\n", i + 1);
@@ -25,7 +25,7 @@ static int try_reconnect(const char *ipaddr, uint16_t port,
 	return (-1);
 }
 
-static int send_output(cclient *self, FILE *output)
+static int send_output(cclient_t *self, FILE *output)
 {
 	char *s = NULL;
 	int exit_code;
@@ -51,12 +51,12 @@ static int send_output(cclient *self, FILE *output)
 	return (0);
 }
 
-static int run_command(cclient *self)
+static int run_command(cclient_t *self)
 {
 	char *cmd;
 	FILE *output;
 
-	if (self->cbuffer->getbytes(self->cbuffer, &cmd, '\n') == -1 || cmd == NULL)
+	if (cbuffer_getbytes(self->cbuffer, &cmd, '\n') == -1 || cmd == NULL)
 		return (-1);
 	if (fork() != 0)
 		return (0);
@@ -75,7 +75,7 @@ static int run_command(cclient *self)
 
 int client_mode(const char *ipaddr, uint16_t port)
 {
-	cclient self;
+	cclient_t self;
 	struct sockaddr_in saddr;
 	int fd = connect_to(ipaddr, port, &saddr);
 	bool is_running = true;

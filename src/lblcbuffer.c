@@ -9,7 +9,7 @@
 
 #include "lblcbuffer.h"
 
-static size_t lblcbuffer_read(lblcbuffer *buffer, char *dest, size_t count)
+size_t cbuffer_read(cbuffer_t *buffer, char *dest, size_t count)
 {
 	size_t i;
 
@@ -28,7 +28,7 @@ static size_t lblcbuffer_read(lblcbuffer *buffer, char *dest, size_t count)
 	return (i);
 }
 
-static size_t lblcbuffer_write(lblcbuffer *buffer, const char *src, size_t count)
+size_t cbuffer_write(cbuffer_t *buffer, const char *src, size_t count)
 {
 	size_t i;
 
@@ -47,12 +47,12 @@ static size_t lblcbuffer_write(lblcbuffer *buffer, const char *src, size_t count
 	return (i);
 }
 
-static void lblcbuffer_destroy(lblcbuffer *buffer)
+void cbuffer_destroy(cbuffer_t *buffer)
 {
 	free(buffer->buffer);
 }
 
-static size_t lblcbuffer_lsize(lblcbuffer *buffer)
+size_t cbuffer_lsize(cbuffer_t *buffer)
 {
 	if (buffer->reader < buffer->writer)
 		return (buffer->end - buffer->writer +
@@ -62,7 +62,7 @@ static size_t lblcbuffer_lsize(lblcbuffer *buffer)
 	return ((buffer->empty) ? buffer->size : 0);
 }
 
-ssize_t lblcbuffer_getbytes(lblcbuffer *buffer, char **pline, char delim)
+ssize_t cbuffer_getbytes(cbuffer_t *buffer, char **pline, char delim)
 {
 	size_t rd;
 	char *p = buffer->reader;
@@ -74,18 +74,19 @@ ssize_t lblcbuffer_getbytes(lblcbuffer *buffer, char **pline, char delim)
 	for (rd = 1; *p != delim && p != buffer->writer; ++rd) {
 		if (p == buffer->end)
 			p = buffer->buffer;
-		++p;
+		else
+			++p;
 	}
 	*pline = calloc(rd + 1, sizeof(char));
 	if (*pline == NULL)
 		return (-1);
-	buffer->read(buffer, *pline, rd);
+	cbuffer_read(buffer, *pline, rd);
 	return (rd);
 }
 
-int lblcbuffer_create(lblcbuffer *buffer, size_t size)
+int cbuffer_create(cbuffer_t *buffer, size_t size)
 {
-	buffer->buffer = calloc(1, size);
+	buffer->buffer = malloc(size);
 	if (buffer->buffer == NULL)
 		return (-1);
 	buffer->size = size;
@@ -93,10 +94,5 @@ int lblcbuffer_create(lblcbuffer *buffer, size_t size)
 	buffer->writer = buffer->buffer;
 	buffer->end = buffer->buffer + buffer->size;
 	buffer->empty = true;
-	buffer->read = lblcbuffer_read;
-	buffer->destroy = lblcbuffer_destroy;
-	buffer->write = lblcbuffer_write;
-	buffer->lsize = lblcbuffer_lsize;
-	buffer->getbytes = lblcbuffer_getbytes;
 	return (0);
 }

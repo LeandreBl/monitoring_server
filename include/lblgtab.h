@@ -12,22 +12,20 @@
 
 # define GTAB_REALLOC_SIZE (5)
 
-typedef struct lblgtab_s lblgtab;
-
-struct lblgtab_s {
+typedef struct lblgtab_s {
 	size_t max_size;
 	size_t len;
 	void **i;
-	void (* destroy)(lblgtab *gtab, void (* ifct)(void *));
-	int (* resize)(lblgtab *gtab, size_t newsize, void (* ifct)(void *));
-	int (* append)(lblgtab *gtab, void *add);
-	int (* append_at)(lblgtab *gtab, void *add, size_t index);
-	void (* remove)(lblgtab *gtab, void *remove, void (* ifct)(void *));
-	void (* remove_at)(lblgtab *gtab, size_t index, void (* ifct)(void *));
-	int (* shrink_to_fit)(lblgtab *gtab);
-	void (* swap)(lblgtab *gtab, size_t p1, size_t p2);
-};
+} gtab_t;
 
-int lblgtab_create(lblgtab *gtab, size_t nsize);
+int gtab_create(gtab_t *gtab, size_t nsize);
+void gtab_destroy(gtab_t *gtab, void (* ifct)(void *));
+int gtab_resize(gtab_t *gtab, size_t newsize, void (* ifct)(void *));
+int gtab_append(gtab_t *gtab, void *add);
+int gtab_append_at(gtab_t *gtab, void *add, size_t index);
+void gtab_remove(gtab_t *gtab, void *remove, void (* ifct)(void *));
+void gtab_remove_at(gtab_t *gtab, size_t index, void (* ifct)(void *));
+int gtab_shrink_to_fit(gtab_t *gtab);
+void gtab_swap(gtab_t *gtab, size_t p1, size_t p2);
 
 #endif /* !LBL_GTAB_H_ */

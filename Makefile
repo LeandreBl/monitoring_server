@@ -9,6 +9,8 @@ NAME		= lbl-monitor
 
 CC		= gcc
 
+LIBS		= -lpthread -lreadline
+
 SRCS		= src/main.c
 SRCS		+= src/lblcbuffer.c
 SRCS		+= src/lblgtab.c
@@ -31,6 +33,7 @@ SRCS		+= src/_stop.c
 SRCS		+= src/_pretty_ls.c
 SRCS		+= src/client_mode.c
 SRCS		+= src/_ack.c
+SRCS		+= src/stdin_thread.c
 
 OBJS		= $(SRCS:.c=.o)
 
@@ -67,4 +70,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re tests_run
+.PHONY: all clean fclean re tests_run install
+
+install: all
+	@cp $(NAME) /usr/bin 2> /dev/null || printf "Run install as super user:\nsudo make install\n"
