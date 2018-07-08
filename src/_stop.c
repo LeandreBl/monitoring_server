@@ -9,7 +9,6 @@
 
 int _stop(cserver_t *server, __attribute__ ((unused)) const char *line)
 {
-	trace(T_INFO, "Stopping server ...\n");
 	server->is_running = false;
 	return (0);
 }
