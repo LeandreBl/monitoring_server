@@ -32,6 +32,7 @@ static const client_parser_t acts[] = {
 	{ COMMAND, client_exec },
 	{ EJECT, client_eject },
 	{ SEND, client_receive },
+	{ RECEIVE, client_send },
 };
 
 int client_mode(const char *ipaddr, uint16_t port)
@@ -39,7 +40,6 @@ int client_mode(const char *ipaddr, uint16_t port)
 	cclient_t self;
 	struct sockaddr_in saddr;
 	int fd = connect_to(ipaddr, port, &saddr);
-	bool is_running = true;
 	pkt_header_t header;
 
 	if (cclient_create(&self, fd, &saddr, S_CLIENT) == -1) {
@@ -48,7 +48,7 @@ int client_mode(const char *ipaddr, uint16_t port)
 	}
 	if (fd != -1)
 		trace(T_INFO, "Connected !\n");
-	while (is_running) {
+	while (true) {
 		if (self.fd == -1 && try_reconnect(ipaddr, port, &self, 60) == -1)
 			break;
 		if (read_wrapper(self.fd, &header, sizeof(header)) == sizeof(header)) {

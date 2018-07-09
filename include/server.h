@@ -80,7 +80,7 @@ int cserver_run(cserver_t *server);
 void cserver_destroy(cserver_t *server);
 
 void pkt_header(pkt_header_t *header, size_t pkt_size, enum action_e action);
-ssize_t client_send(cclient_t *client, pkt_header_t *header, const void *data);
+ssize_t send_client(cclient_t *client, pkt_header_t *header, const void *data);
 
 int cserver_poll(cserver_t *server, int size);
 int cserver_add_in_poll(cserver_t *server, cclient_t *client);
@@ -106,6 +106,7 @@ int _stdin_exec(cserver_t *server, const char *line);
 int _stdin_dump(cserver_t *server, const char *line);
 int _eject(cserver_t *server, const char *line);
 int _send(cserver_t *server, const char *line);
+int _receive(cserver_t *server, const char *line);
 
 int scalloc(void *pptr, size_t nmemb, size_t size);
 ssize_t read_wrapper(int fd, void *dest, size_t size);
@@ -113,5 +114,6 @@ int client_send_output(cclient_t *self, FILE *output);
 int client_receive(cclient_t *client, size_t pkt_size);
 int client_eject(cclient_t *client, size_t pkt_size);
 int client_exec(cclient_t *client, size_t pkt_size);
+int client_send(cclient_t *client, size_t pkt_size);
 
 #endif /* !COBRA_SERVER_H_ */

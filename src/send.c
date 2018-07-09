@@ -19,7 +19,7 @@ static int _send_file(cclient_t *client, int fd, const char *filename)
 	char buffer[512];
 
 	pkt_header(&header, strlen(filename), SEND);
-	client_send(client, &header, filename);
+	send_client(client, &header, filename);
 	pkt_header(&header, lseek(fd, 0, SEEK_END), SEND_FILE);
 	write(client->fd, &header, sizeof(header));
 	lseek(fd, 0, SEEK_SET);

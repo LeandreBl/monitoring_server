@@ -16,7 +16,7 @@ void pkt_header(pkt_header_t *header, size_t pkt_size, enum action_e action)
 	header->action = action;
 }
 
-ssize_t client_send(cclient_t *client, pkt_header_t *header, const void *data)
+ssize_t send_client(cclient_t *client, pkt_header_t *header, const void *data)
 {
 	ssize_t wr;
 	ssize_t total;

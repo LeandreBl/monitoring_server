@@ -14,7 +14,7 @@ static int send_eject(cclient_t *client)
 	pkt_header_t header;
 
 	pkt_header(&header, 0, EJECT);
-	if (client_send(client, &header, NULL) == -1)
+	if (send_client(client, &header, NULL) == -1)
 		return (-1);
 	return (0);
 }

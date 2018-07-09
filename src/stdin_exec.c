@@ -18,7 +18,7 @@ static int _exec(cclient_t *client, const char *cmd)
 
 	pkt_header(&header, strlen(cmd), COMMAND);
 	if (client->connected && client->use == S_CLIENT)
-		return (client_send(client, &header, cmd));
+		return (send_client(client, &header, cmd));
 	return (0);
 }
 
