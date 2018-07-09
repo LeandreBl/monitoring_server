@@ -8,13 +8,17 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "server.h"
 
 static int _exec(cclient_t *client, const char *cmd)
 {
+	pkt_header_t header;
+
+	pkt_header(&header, strlen(cmd), COMMAND);
 	if (client->connected && client->use == S_CLIENT)
-		return (dprintf(client->fd, "%s\n", cmd));
+		return (client_send(client, &header, cmd));
 	return (0);
 }
 

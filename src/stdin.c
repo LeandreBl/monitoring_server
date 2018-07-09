@@ -25,6 +25,7 @@ static const struct parsing_s commands[] = {
 	{"/help", _help, "/help\t\t\t(shows this help)"},
 	{"/ack @", _ack, "/ack   @[ip]\t\t(informations about clients)"},
 	{"/eject @", _eject, "/eject @[ip]\t\t(eject a client)"},
+	{"/send @", _send, "/send @[ip] [pathname] [filename] (send the file at <pathname> as <filename> to a client)"},
 };
 
 int _help(__attribute__ ((unused)) cserver_t *server,

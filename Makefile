@@ -35,6 +35,13 @@ SRCS		+= src/client_mode.c
 SRCS		+= src/ack.c
 SRCS		+= src/stdin_thread.c
 SRCS		+= src/eject.c
+SRCS		+= src/packet.c
+SRCS		+= src/send.c
+SRCS		+= src/client_send_output.c
+SRCS		+= src/read_wrapper.c
+SRCS		+= src/client_eject.c
+SRCS		+= src/client_exec.c
+SRCS		+= src/client_receive.c
 
 OBJS		= $(SRCS:.c=.o)
 

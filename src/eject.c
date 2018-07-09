@@ -9,6 +9,16 @@
 
 #include "server.h"
 
+static int send_eject(cclient_t *client)
+{
+	pkt_header_t header;
+
+	pkt_header(&header, 0, EJECT);
+	if (client_send(client, &header, NULL) == -1)
+		return (-1);
+	return (0);
+}
+
 int _eject(cserver_t *server, const char *line)
 {
 	uint32_t addr;
@@ -23,7 +33,7 @@ int _eject(cserver_t *server, const char *line)
 	for (size_t i = 1; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
 		if (*line == 'a' || addr == ptr->saddr->sin_addr.s_addr) {
-			dprintf(ptr->fd, "EJECT\n");
+			send_eject(ptr);
 			cserver_del_in_poll(server, ptr);
 			trace(T_INFO, "Ejecting %u.%u.%u.%u\n", p[0], p[1], p[2], p[3]);
 		}

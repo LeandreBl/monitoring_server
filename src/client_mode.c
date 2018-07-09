@@ -28,58 +28,11 @@ static int try_reconnect(const char *ipaddr, uint16_t port,
 	return (-1);
 }
 
-static int send_output(cclient_t *self, FILE *output)
-{
-	char *s = NULL;
-	int exit_code;
-	size_t len = 0;
-	size_t rd;
-
-	do {
-		s = realloc(s, len + 513);
-		if (s == NULL) {
-			dprintf(self->fd, "-1: Not enough memory\n");
-			return (-1);
-		}
-		rd = fread(s + len, 1, 512, output);
-		len += rd;
-	} while (rd == 512);
-	if (len > 0 && s[len - 1] == '\n')
-		--len;
-	s[len] = 0;
-	exit_code = pclose(output) / 256;
-	s = realloc(s, len + 1);
-	dprintf(self->fd, "%d:%s\n", exit_code, s);
-	free(s);
-	return (0);
-}
-
-static int run_command(cclient_t *self)
-{
-	char *cmd;
-	FILE *output;
-
-	if (cbuffer_getbytes(self->cbuffer, &cmd, '\n') == -1 || cmd == NULL)
-		return (-1);
-	trace(T_DEBUG, "server: \"%s\"\n", cmd);
-	if (strcmp(cmd, "EJECT\n") == 0) {
-		trace(T_INFO, "Ejected by server\n");
-		exit(0);
-	}
-	if (fork() != 0)
-		return (0);
-	cmd[strlen(cmd) - 1] = 0;
-	trace(T_INFO, "Executing: \"%s\"\n", cmd);
-	output = popen(cmd, "r");
-	if (output == NULL) {
-		trace(T_ERROR, "Unable to exec command \"%s\"\n", cmd);
-		return (1);
-	}
-	if (send_output(self, output) == -1)
-		trace(T_ERROR, "Connection failed\n");
-	exit(0);
-	return (0);
-}
+static const client_parser_t acts[] = {
+	{ COMMAND, client_exec },
+	{ EJECT, client_eject },
+	{ SEND, client_receive },
+};
 
 int client_mode(const char *ipaddr, uint16_t port)
 {
@@ -87,6 +40,7 @@ int client_mode(const char *ipaddr, uint16_t port)
 	struct sockaddr_in saddr;
 	int fd = connect_to(ipaddr, port, &saddr);
 	bool is_running = true;
+	pkt_header_t header;
 
 	if (cclient_create(&self, fd, &saddr, S_CLIENT) == -1) {
 		trace(T_PANIC, "Can't start client\n");
@@ -97,9 +51,19 @@ int client_mode(const char *ipaddr, uint16_t port)
 	while (is_running) {
 		if (self.fd == -1 && try_reconnect(ipaddr, port, &self, 60) == -1)
 			break;
-		rdonly(NULL, &self);
-		if (run_command(&self) == -1 && try_reconnect(ipaddr, port, &self, 60) == -1)
-			break;
+		if (read_wrapper(self.fd, &header, sizeof(header)) == sizeof(header)) {
+			trace(T_DEBUG, "magic(%x), size(%u), action(%d)\n", header.magic,
+				header.pkt_size, header.action);
+			if (header.magic != MAGIC) {
+				trace(T_ERROR, "Wrong magic: %x\n", header.magic);
+				return (-1);
+			}
+			for (size_t i = 0; i < sizeof(acts) / sizeof(*acts); ++i)
+				if (acts[i].action == header.action)
+					acts[i].link(&self, header.pkt_size);
+		}
+		else
+			try_reconnect(ipaddr, port, &self, 10);
 	}
 	cclient_destroy(&self);
 	return (0);
