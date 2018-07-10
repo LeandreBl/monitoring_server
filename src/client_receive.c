@@ -43,7 +43,7 @@ int client_receive(cclient_t *client, size_t pkt_size)
 		header.pkt_size -= rd;
 	} while (header.pkt_size > 0);
 	trace(T_DEBUG, "File \"%s\" (%zu bytes) received\n", filename, lseek(fd, 0, SEEK_END));
-	dprintf(client->fd, "0:File \"%s\" received\n", filename);
+	dprintf(client->fd, "ACK:0:File \"%s\" received\n", filename);
 	free(filename);
 	close(fd);
 	return (0);

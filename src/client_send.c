@@ -17,7 +17,7 @@ static int _send_file(cclient_t *client, int fd, const char *pathname)
 	char buffer[512];
 	ssize_t rd;
 
-	dprintf(client->fd, "FILE_RECEIVE:%zu:%s\n", lseek(fd, 0, SEEK_END), pathname);
+	dprintf(client->fd, "RECEIVE:%zu:%s\n", lseek(fd, 0, SEEK_END), pathname);
 	lseek(fd, 0, SEEK_SET);
 	do {
 		rd = read(fd, buffer, sizeof(buffer));
@@ -33,7 +33,7 @@ int client_send(cclient_t *client, size_t pkt_size)
 	int fd;
 
 	if (filename == NULL) {
-		dprintf(client->fd, "-1: Memory failed\n");
+		dprintf(client->fd, "ACK:-1:/send: Memory failed\n");
 		return (-1);
 	}
 	read_wrapper(client->fd, filename, pkt_size);
@@ -41,7 +41,7 @@ int client_send(cclient_t *client, size_t pkt_size)
 	pathname++[0] = 0;
 	fd = open(filename, O_RDONLY);
 	if (fd == -1) {
-		dprintf(client->fd, "-1: File \"%s\" not found\n", filename);
+		dprintf(client->fd, "ACK:-1:/send: File \"%s\" not found\n", filename);
 		free(filename);
 		return (-1);
 	}

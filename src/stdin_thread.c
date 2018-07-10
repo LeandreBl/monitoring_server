@@ -22,6 +22,7 @@ void *stdin_thread(void *p)
 		if (line == NULL)
 			server->is_running = false;
 		else {
+			epur_str(line);
 			_stdin(server, line);
 			add_history(line);
 			free(line);

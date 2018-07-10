@@ -68,6 +68,11 @@ typedef struct client_parser_s {
 	int (*link)(cclient_t *client, size_t pkt_size);
 } client_parser_t;
 
+typedef struct client_output_parser_s {
+	const char *pattern;
+	int (*link)(cserver_t *server, cclient_t *client);
+} client_output_parser_t;
+
 int client_mode(const char *ipaddr, uint16_t port);
 
 int create_server(uint16_t port, int backlog, struct sockaddr_in *ptr);
@@ -108,8 +113,17 @@ int _eject(cserver_t *server, const char *line);
 int _send(cserver_t *server, const char *line);
 int _receive(cserver_t *server, const char *line);
 
+int dump_execute(cserver_t *server, cclient_t *client);
+int dump_receive(cserver_t *server, cclient_t *client);
+int dump_ack(cserver_t *server, cclient_t *client);
+
 int scalloc(void *pptr, size_t nmemb, size_t size);
 ssize_t read_wrapper(int fd, void *dest, size_t size);
+char **wordtab(const char *str, const char *delim);
+void epur_str(char *str);
+size_t tablen(void *tab);
+void free_tab(void *tab);
+
 int client_send_output(cclient_t *self, FILE *output);
 int client_receive(cclient_t *client, size_t pkt_size);
 int client_eject(cclient_t *client, size_t pkt_size);

@@ -78,6 +78,10 @@ ssize_t cbuffer_getbytes(cbuffer_t *buffer, char **pline, char delim)
 			p = buffer->buffer;
 		++p;
 	}
+	if (*p != delim) {
+		*pline = NULL;
+		return (0);
+	}
 	*pline = calloc(rd + 1, sizeof(char));
 	if (*pline == NULL)
 		return (-1);

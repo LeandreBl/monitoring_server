@@ -1,2 +1,3 @@
 lbl-monitor
 src/*.o
+.vscode/

@@ -29,51 +29,31 @@ static int _send_file(cclient_t *client, int fd, const char *filename)
 	} while (rd > 0);
 	return (0);
 }
-static int get_name(const char *line, char **p)
-{
-	line = strchr(line, ' ');
-	if (line++ == NULL) {
-		trace(T_ERROR, "/send: syntax error\n");
-		return (-1);
-	}
-	*p = strndup(line, strcspn(line, " \t"));
-	if (*p == NULL)
-		return (-1);
-	return (0);
-}
 
 int _send(cserver_t *server, const char *line)
 {
+	char **parse = wordtab(line, " ");
 	uint32_t addr;
-	char *pathname;
-	char *filename;
 	cclient_t *ptr;
-	bool a = (*line == 'a');
 	int fd;
 
-	addr = get_addr(line);
-	if (get_name(line, &pathname) == -1)
-		return (-1);
-	line = strchr(line, ' ');
-	if (line == NULL) {
-		trace(T_ERROR, "/send: no filename\n");
+	if (parse == NULL || tablen(parse) < 3) {
+		trace(T_ERROR, "/send: Syntax error\n");
 		return (-1);
 	}
-	if (get_name(line + 1, &filename) == -1)
-		return (-1);
-	trace(T_DEBUG, "path: %s, file: %s\n", pathname, filename);
-	fd = open(pathname, O_RDONLY);
-	free(pathname);
+	addr = get_addr(parse[0]);
+	trace(T_DEBUG, "path: %s, file: %s\n", parse[1], parse[2]);
+	fd = open(parse[1], O_RDONLY);
 	if (fd == -1) {
-		trace(T_ERROR, "Can't open \"%s\" file\n", pathname);
+		trace(T_ERROR, "Can't open \"%s\" file\n", parse[1]);
 		return (-1);
 	}
 	for (size_t i = 1; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
-		if (ptr->saddr->sin_addr.s_addr == addr || a == true)
-			_send_file(ptr, fd, filename);
+		if (ptr->saddr->sin_addr.s_addr == addr || parse[0][0] == 'a')
+			_send_file(ptr, fd, parse[2]);
 	}
 	close(fd);
-	free(filename);
+	free_tab(parse);
 	return (0);
 }

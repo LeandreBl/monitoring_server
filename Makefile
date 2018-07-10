@@ -44,6 +44,11 @@ SRCS		+= src/client_exec.c
 SRCS		+= src/client_receive.c
 SRCS		+= src/client_send.c
 SRCS		+= src/receive.c
+SRCS		+= src/wordtab.c
+SRCS		+= src/epur_str.c
+SRCS		+= src/dump_execute.c
+SRCS		+= src/dump_receive.c
+SRCS		+= src/dump_ack.c
 
 OBJS		= $(SRCS:.c=.o)
 

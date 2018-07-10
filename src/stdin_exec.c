@@ -22,44 +22,51 @@ static int _exec(cclient_t *client, const char *cmd)
 	return (0);
 }
 
-static void _exec_all(cserver_t *server, const char *cmd)
+static int _error(cserver_t *server, const char *command)
 {
-	trace(T_INFO, "Sending \"%s\" to %u clients\n", cmd, server->clients->len - 1);
-		for (size_t i = 0; i < server->clients->len; ++i)
-			_exec(server->clients->i[i], cmd);
-}
-
-int _stdin_exec(cserver_t *server, const char *line)
-{
-	const char *cmd = strchr(line, ' ');
-	uint32_t addr;
-	uint8_t *p;
-	cclient_t *ptr;
-
-	if (cmd == NULL) {
+	if (command == NULL) {
 		trace(T_ERROR, "usage: /exec @[ip] [command]\n\t\t"
 			"if @a is used, the command is send to all clients\n");
 		return (-1);
 	}
-	++cmd;
 	if (server->clients->len <= 1) {
 		trace(T_ERROR, "No client connected\n");
-		return (1);
+		return (-1);
 	}
-	if (line[0] == 'a') {
-		_exec_all(server, cmd);
-		return (0);
-	}
-	addr = get_addr(line);
+	return (0);
+}
+
+static bool _exec_loop(cserver_t *server, const char *command, uint32_t addr, bool all)
+{
+	cclient_t *ptr;
+	uint8_t *p;
+	bool done = false;
+
 	for (size_t i = 1; i < server->clients->len; ++i) {
 		ptr = server->clients->i[i];
 		p = (uint8_t *)&ptr->saddr->sin_addr;
-		if (ptr->saddr->sin_addr.s_addr == addr) {
-			trace(T_INFO, "Sending \"%s\" to %u.%u.%u.%u\n",
-			cmd, p[0], p[1], p[2], p[3]);
-			return (_exec(server->clients->i[i], cmd));
+		if (ptr->saddr->sin_addr.s_addr == addr || all == true) {
+			if (all == false)
+				trace(T_INFO, "Sending \"%s\" to %u.%u.%u.%u\n",
+					command, p[0], p[1], p[2], p[3]);
+			_exec(server->clients->i[i], command);
+			done = true;
 		}
 	}
-	trace(T_ERROR, "/exec, incorrect ip\n");
+	return (done);
+}
+
+int _stdin_exec(cserver_t *server, const char *line)
+{
+	const char *command = strchr(line, ' ');
+	uint32_t addr;
+
+	if (_error(server, command) == -1)
+		return (-1);
+	addr = get_addr(line);
+	if (*line == 'a')
+		trace(T_INFO, "Sending \"%s\" to %u clients\n", command + 1, server->clients->len - 1);
+	if (_exec_loop(server, command + 1, addr, *line == 'a') == false)
+		trace(T_ERROR, "/exec, incorrect ip\n");
 	return (-1);
 }

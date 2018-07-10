@@ -6,6 +6,7 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "server.h"
 
@@ -19,7 +20,7 @@ int client_send_output(cclient_t *self, FILE *output)
 	do {
 		s = realloc(s, len + 513);
 		if (s == NULL) {
-			dprintf(self->fd, "-1: Not enough memory\n");
+			dprintf(self->fd, "ACK:-1:/exec: Not enough memory\n");
 			return (-1);
 		}
 		rd = fread(s + len, 1, 512, output);
@@ -29,11 +30,10 @@ int client_send_output(cclient_t *self, FILE *output)
 		--len;
 	s[len] = 0;
 	exit_code = pclose(output) / 256;
-	s = realloc(s, len + 1);
 	if (s == NULL)
-		dprintf(self->fd, "%d:<!>Realloc failed<!>\n", exit_code);
+		dprintf(self->fd, "ACK:%d:/exec: Realloc failed\n", exit_code);
 	else
-		dprintf(self->fd, "%d:%s\n", exit_code, s);
+		dprintf(self->fd, "EXECUTE:%d:%zu:%s\n", exit_code, strlen(s) + 1, s);
 	free(s);
 	return (0);
 }
